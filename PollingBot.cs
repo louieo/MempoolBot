@@ -9,21 +9,37 @@ namespace MempoolBot
 {
     internal class PollingBot
     {
-        const int ECONOMY_THRESHOLD = 5;
-        const int EMAIL_REPEAT_INTERVAL_MINS = 10;
-
         MempoolAPI _MempoolAPI;
         int _EconomyThreshold;
+        int _AlertFrequencyRepeatMins;
+        string _SmtpServer;
+        string _SmtpUser;
+        string _SmtpPass;
+        string _FromEmail;
+        string _ToEmail;
+
         Timer _Timer = new Timer();
         RecommendedFees? _PreviousFees;
         DateTime _EmailLastSentTime = DateTime.MinValue;
 
-        public PollingBot(string url) 
+        public PollingBot(string mempoolApiUrl,
+            int economyRateThreshold,
+            int alertFrequencyRepeatMins,
+            string smtpServer,
+            string smtpUser,
+            string smtpPass,
+            string fromEmail,
+            string toEmail)
         {
-			_MempoolAPI = new MempoolAPI(url);
-            if (!int.TryParse(Environment.GetEnvironmentVariable("ECONOMY_THRESHOLD"), out _EconomyThreshold))
-                _EconomyThreshold = ECONOMY_THRESHOLD;
-            Console.WriteLine($"Economy threshold = {_EconomyThreshold}");
+            _MempoolAPI = new MempoolAPI(mempoolApiUrl);
+
+            _EconomyThreshold = economyRateThreshold;
+            _AlertFrequencyRepeatMins = alertFrequencyRepeatMins;
+            _SmtpServer = smtpServer;
+            _SmtpUser = smtpUser;
+            _SmtpPass = smtpPass;
+            _FromEmail = fromEmail;
+            _ToEmail = toEmail;
         }
 
         public void Start()
@@ -48,10 +64,11 @@ namespace MempoolBot
                     {
                         if (_PreviousFees == null ||
                             _PreviousFees.EconomyFee > _EconomyThreshold ||
-                            (DateTime.Now - _EmailLastSentTime).Minutes >= EMAIL_REPEAT_INTERVAL_MINS)
+                            (DateTime.Now - _EmailLastSentTime).Minutes >= _AlertFrequencyRepeatMins)
                         {
                             Console.WriteLine($"Sending alert! EconomyFee = {JsonConvert.SerializeObject(fees.EconomyFee)}, ECONOMY_THRESHOLD = {_EconomyThreshold}");
                             _EmailLastSentTime = DateTime.Now;
+
                             var body = MakeEmailBody(fees);
                             await SendEmailAsync(body);
                         }
@@ -70,31 +87,27 @@ namespace MempoolBot
         {
             return $"<b>Now:</b> {JsonConvert.SerializeObject(fees)}<br>" +
                     $"<b>Previous:</b> {JsonConvert.SerializeObject(_PreviousFees)}<br>" +
-                    $"<b>ECONOMY_THRESHOLD:</b> {ECONOMY_THRESHOLD}";
+                    $"<b>ECONOMY_THRESHOLD:</b> {_EconomyThreshold}";
         }
 
         private async Task SendEmailAsync(string body)
         {
             try
             {
-                SmtpClient mySmtpClient = new SmtpClient("smtp.gmail.com");
+                SmtpClient mySmtpClient = new SmtpClient(_SmtpServer);
 
                 // set smtp-client with basicAuthentication
+                var basicAuthenticationInfo = new NetworkCredential(_SmtpUser, _SmtpPass);
                 mySmtpClient.UseDefaultCredentials = false;
-                NetworkCredential basicAuthenticationInfo = new NetworkCredential("louieo@gmail.com", "welizcrheejrnirk");
                 mySmtpClient.Port = 587;
                 mySmtpClient.Credentials = basicAuthenticationInfo;
-                mySmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network; 
+                mySmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
                 mySmtpClient.EnableSsl = true;
 
                 // add from,to mailaddresses
-                MailAddress from = new MailAddress("louieo@gmail.com", "Mempool Bot");
-                MailAddress to = new MailAddress("louieo@gmail.com");
-                MailMessage myMail = new MailMessage(from, to);
-
-                // add ReplyTo
-                //MailAddress replyTo = new MailAddress("louieo@gmail.com");
-                //myMail.ReplyToList.Add(replyTo);
+                var from = new MailAddress(_FromEmail, "Mempool Bot");
+                var to = new MailAddress(_ToEmail);
+                var myMail = new MailMessage(from, to);
 
                 // set subject and encoding
                 myMail.Subject = "Mempool Fee Bot";
@@ -103,6 +116,7 @@ namespace MempoolBot
                 // set body-message and encoding
                 myMail.Body = body;
                 myMail.BodyEncoding = System.Text.Encoding.UTF8;
+
                 // text or html
                 myMail.IsBodyHtml = true;
 
