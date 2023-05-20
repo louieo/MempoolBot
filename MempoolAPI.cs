@@ -20,7 +20,7 @@ namespace MempoolBot
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error getting fees from Mempool: {ex.Message}");
+                Console.WriteLine($"Error getting fees from Mempool API: {ex.Message}");
                 return null;
             }
         }

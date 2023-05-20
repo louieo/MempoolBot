@@ -6,3 +6,12 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    environment:
+        - "MEMPOOL_API_URL:http://mempool.space:3006/api/v1"
+        - "ECONOMY_RATE_THRESHOLD:5"
+        - "ALERT_REPEAT_FREQUENCY_MINUTES:10"
+        - "SMTP_SERVER:smtp.example.com"
+        - "SMTP_USER:example_user@example.com"
+        - "SMTP_PASS:example"
+        - "FROM_EMAIL:example_from@example.com"
+        - "TO_EMAIL:example_to@example.com"
