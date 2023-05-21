@@ -21,6 +21,15 @@ var smptPass = Environment.GetEnvironmentVariable("SMTP_PASS") ?? DEFAULT_SMTP_P
 var fromEmail = Environment.GetEnvironmentVariable("FROM_EMAIL") ?? DEFAULT_FROM_EMAIL;
 var toEmail = Environment.GetEnvironmentVariable("TO_EMAIL") ?? DEFAULT_TO_EMAIL;
 
+Console.WriteLine($"MEMPOOL_API_URL={mempoolApiUrl}");
+Console.WriteLine($"ECONOMY_RATE_THRESHOLD={economyRateThreshold}");
+Console.WriteLine($"ALERT_REPEAT_FREQUENCY_MINUTES={alertRepeatFrequencyMinutes}");
+Console.WriteLine($"SMTP_SERVER={smptServer}");
+Console.WriteLine($"SMTP_USER={smptUser}");
+Console.WriteLine($"SMTP_PASS={smptPass}");
+Console.WriteLine($"FROM_EMAIL={fromEmail}");
+Console.WriteLine($"TO_EMAIL={toEmail}");
+
 Console.WriteLine("Creating polling bot...");
 var pollingBot = new PollingBot(mempoolApiUrl,
     economyRateThreshold,
