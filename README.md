@@ -59,8 +59,4 @@ https://core.telegram.org/bots/tutorial
 
 ## Improvement Ideas
 
-- Respond to requests from Telegram user to 'get rates now'
-- Investigate Nostr and Simplex notifiers/integrations
-- Make into an Umbrel package
-- Separate config per notifier so not all in one place and redundant when using a particular NotifyMethod
-- More options with notification schedules, repeats etc
+- See GitHub Issues
