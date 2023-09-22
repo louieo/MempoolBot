@@ -1,5 +1,5 @@
 ﻿using MempoolBot;
-using MempoolBot.Enums;
+using MempoolBot.Common;
 using MempoolBot.Notifications;
 using Microsoft.Extensions.Configuration;
 
@@ -15,16 +15,16 @@ Settings? settings = config.GetRequiredSection("Settings").Get<Settings>();
 if (settings == null) throw new Exception("Unable to get config from settings file");
 
 Console.WriteLine("---------------------------------------------");
-Console.WriteLine($"NotifyMethod={settings.NotifyMethod}");
-Console.WriteLine($"MempoolApiUrl={settings.MempoolApiUrl}");
-Console.WriteLine($"EconomyRateThreshold={settings.EconomyRateThreshold}");
-Console.WriteLine($"NotifyRepeatFrequencyMinutes={settings.NotifyRepeatFrequencyMinutes}");
-Console.WriteLine($"TelegramBotToken={settings.TelegramBotToken}");
-Console.WriteLine($"SmtpServer={settings.SmtpServer}");
-Console.WriteLine($"SmtpUser={settings.SmtpUser}");
-Console.WriteLine($"SmtpPass={settings.SmtpPass}");
-Console.WriteLine($"FromEmail={settings.FromEmail}");
-Console.WriteLine($"ToEmail={settings.ToEmail}");
+Console.WriteLine($"NotifyMethod = {settings.NotifyMethod}");
+Console.WriteLine($"MempoolApiUrl = {settings.MempoolApiUrl}");
+Console.WriteLine($"EconomyRateThreshold = {settings.EconomyRateThreshold}");
+Console.WriteLine($"NotifyRepeatFrequencyMinutes = {settings.NotifyRepeatFrequencyMinutes}");
+Console.WriteLine($"TelegramBotToken = {settings.TelegramBotToken}");
+Console.WriteLine($"SmtpServer = {settings.SmtpServer}");
+Console.WriteLine($"SmtpUser = {settings.SmtpUser}");
+Console.WriteLine($"SmtpPass = {settings.SmtpPass}");
+Console.WriteLine($"FromEmail = {settings.FromEmail}");
+Console.WriteLine($"ToEmail = {settings.ToEmail}");
 Console.WriteLine("---------------------------------------------");
 
 INotifier notifier;

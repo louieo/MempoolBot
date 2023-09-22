@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MempoolBot.Enums
+﻿namespace MempoolBot.Common
 {
 	public enum NotifyMethod
 	{

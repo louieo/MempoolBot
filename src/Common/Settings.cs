@@ -1,4 +1,5 @@
-﻿using MempoolBot.Enums;
+﻿
+using MempoolBot.Common;
 
 namespace MempoolBot
 {
