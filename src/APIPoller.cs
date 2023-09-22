@@ -5,7 +5,7 @@ using Timer = System.Timers.Timer;
 
 namespace MempoolBot
 {
-    internal class ApiPoller
+    internal class APIPoller
     {
         const int POLLING_INTERVAL_SECONDS = 5;
 
@@ -17,14 +17,14 @@ namespace MempoolBot
         RecommendedFees? _PreviousFees;
         DateTime _LastNotificationTime = DateTime.MinValue;
 
-        public ApiPoller(Settings settings, INotifier notifier)
+        public APIPoller(Settings settings, INotifier notifier)
         {
             _Settings = settings;
             _Notifier = notifier;
             _MempoolAPI = new MempoolAPI(_Settings.MempoolApiUrl);
         }
 
-        ~ApiPoller()
+        ~APIPoller()
         {
             Console.WriteLine("ApiPoller shutting down...");
         }

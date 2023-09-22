@@ -44,7 +44,7 @@ switch (settings.NotifyMethod)
 using (notifier)
 {
     Console.WriteLine("Creating API poller...");
-    var apiPoller = new ApiPoller(settings, notifier);
+    var apiPoller = new APIPoller(settings, notifier);
 
     Console.WriteLine("Starting API poller...");
     apiPoller.Start();

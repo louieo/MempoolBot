@@ -18,19 +18,26 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Notifications\" />
-    <None Remove="Mempool\" />
-    <None Remove="Common\" />
     <None Remove="src\" />
+    <None Remove="src\Common\" />
+    <None Remove="src\Mempool\" />
+    <None Remove="src\Notifications\" />
+    <None Remove="src\Properties\" />
+    <None Remove="src\Mempool\Models\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Notifications\" />
-    <Folder Include="Mempool\" />
-    <Folder Include="Common\" />
     <Folder Include="src\" />
+    <Folder Include="src\Common\" />
+    <Folder Include="src\Common\" />
+    <Folder Include="src\Mempool\" />
+    <Folder Include="src\Notifications\" />
+    <Folder Include="src\Properties\" />
+    <Folder Include="src\Properties\" />
+    <Folder Include="src\Properties\" />
+    <Folder Include="src\Mempool\Models\" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="appsettings.json">
+    <None Update="src\appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

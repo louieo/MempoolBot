@@ -1,5 +1,4 @@
-﻿using System;
-using MempoolBot.Common;
+﻿using MempoolBot.Common;
 using MempoolBot.Models;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
