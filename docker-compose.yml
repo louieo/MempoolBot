@@ -7,11 +7,13 @@ services:
       context: .
       dockerfile: ./Dockerfile
     environment:
-        MEMPOOL_API_URL: "http://mempool.space:3006/api/v1"
-        ECONOMY_RATE_THRESHOLD:5
-        ALERT_REPEAT_FREQUENCY_MINUTES: 10
-        SMTP_SERVER: "smtp.example.com"
-        SMTP_USER: "example_user@example.com"
-        SMTP_PASS: "example"
-        FROM_EMAIL: "example_from@example.com"
-        TO_EMAIL: "example_to@example.com"
+      - Settings__NotifyMethod=Telegram
+      - Settings__MempoolApiUrl=http://mempool.space/api/v1
+      - Settings__EconomyRateThreshold=20
+      - Settings__NotifyRepeatFrequencyMinutes=1
+      - Settings__TelegramBotToken=5621952976:AAH8aYA_G6bkwCudpTouiSLorK75NTGWnbE
+      - Settings__SmtpServer=smtp.gmail.com
+      - Settings__SmtpUser=test@gmail.com
+      - Settings__SmtpPass=auth token here
+      - Settings__FromEmail=test@gmail.com
+      - Settings__ToEmail=test@gmail.com
