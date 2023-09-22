@@ -1,5 +1,5 @@
 version: '3.4'
-
+name: mempoolbot
 services:
   mempoolbot:
     image: louieo/mempoolbot
@@ -11,7 +11,7 @@ services:
       - Settings__MempoolApiUrl=http://mempool.space/api/v1
       - Settings__EconomyRateThreshold=20
       - Settings__NotifyRepeatFrequencyMinutes=1
-      - Settings__TelegramBotToken=5621952976:AAH8aYA_G6bkwCudpTouiSLorK75NTGWnbE
+      - Settings__TelegramBotToken=XXXXXXXXXXX
       - Settings__SmtpServer=smtp.gmail.com
       - Settings__SmtpUser=test@gmail.com
       - Settings__SmtpPass=auth token here

@@ -21,11 +21,13 @@
     <None Remove="Notifications\" />
     <None Remove="Mempool\" />
     <None Remove="Common\" />
+    <None Remove="src\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Notifications\" />
     <Folder Include="Mempool\" />
     <Folder Include="Common\" />
+    <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
