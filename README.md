@@ -1,14 +1,13 @@
 # MempoolBot
 
-Simple push notifier of transaction fee rates in a Bitcoin mempool.  
+Simple push notifier of transaction fee rates in a Bitcoin mempool.
+
 Helps inform you when shitcoiners have run out of money and it may be a good time to make on-chain transactions that you have been waiting to do.  
 Alternatively, just keep a track of fee rates periodically via a push notification.
 
 .NET Core application written in C# and configured for deployment via Docker.
 
-MempoolBot queries the API of a configured Bitcoin Mempool Space instance for recommended fee rates and notifies when the "economy" fee rate is below a configured sats/vByte threshold.
-
-See https://mempool.space/
+MempoolBot queries the API of a configured Bitcoin [Mempool Space](https://mempool.space/) instance for recommended fee rates and notifies when the "economy" fee rate is below a configured sats/vByte threshold.
 
 The Mempool Space API conveniently calculates and returns fastestFee, halfHourFee, hourFee, economyFee and minimumFee.
 
@@ -29,7 +28,7 @@ The application can be configured to point to your own (or any) Bitcoin mempool 
 
 - Login to Telegram with you own account
 - Contact @BotFather and follow prompts to create a new bot and obtain a new token. This bot is under your control - don\'t share the token!
-https://core.telegram.org/bots/tutorial
+[Telegram Bot Tutorial](https://core.telegram.org/bots/tutorial)
 
 ## Configuration
 
