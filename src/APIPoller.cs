@@ -39,7 +39,7 @@ namespace MempoolBot
             _Timer.Stop();
             try
             {
-                Console.WriteLine($"Getting fees from {_Settings.MempoolApiUrl}...");
+                //Console.WriteLine($"Getting fees from {_Settings.MempoolApiUrl}...");
                 var currentFees = await _MempoolAPI.GetRecommendedFees();
 
                 if (currentFees != null)
