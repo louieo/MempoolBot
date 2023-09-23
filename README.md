@@ -51,8 +51,9 @@ https://core.telegram.org/bots/tutorial
 - You can check the logs with `docker logs mempoolbot`
 - Email method currently assumes SMTP over TLS/SSL port 587
 - If using Telegram method, go to your bot on Telegram and click the Start button (or type /start)
-  - If configured with the token correctly, Mempoolbot will receive a new chat and send some welcome info to the Telegram bot.
-  - After this, notifications will be sent when the fee rate goes under the configured threshold and repeat as configured.
+  - If configured with the token correctly, Mempoolbot will receive a new chat and send some welcome info to the Telegram bot
+  - After this, notifications will be sent when the fee rate goes under the configured threshold and repeat as configured
+  - Most recent fees can be requested with /fees command
 - The frequency of checking Mempool Space API is currently hard coded to 5 seconds
 - If running in Docker, set the configuration via the environment variables in docker-compose.yml before building container
 - If running standalone, set the configuration via appsettings.json
