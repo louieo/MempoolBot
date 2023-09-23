@@ -50,7 +50,7 @@ namespace MempoolBot.Notifications
                     return;
                 }
 
-                var feesMsg = $"*Current \"economy\" fee*: {currentFees.EconomyFee} sats/vbyte (below {_Settings.EconomyRateThreshold} sats/vbyte)\n";
+                var feesMsg = $"*Current \"economy\" fee*: {currentFees.EconomyFee} sats/vbyte (configured threshold is {_Settings.EconomyRateThreshold} sats/vbyte)\n";
                 if (LatestFees != null) feesMsg += $"*Previous \"economy\" fee*: {LatestFees?.EconomyFee} sats/vbyte";
 
                 Console.WriteLine($"Sending message to ChatId {_ChatId} (from InstanceId {_InstanceId} running on {Environment.MachineName} using {_Settings.MempoolApiUrl})");
