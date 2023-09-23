@@ -16,8 +16,9 @@ namespace MempoolBot.Notifications
 
         long _ChatId;
         Guid _InstanceId = Guid.NewGuid();
-        RecommendedFees? _PreviousFees;
         private bool disposedValue;
+
+        public RecommendedFees? LatestFees { get; set; }
 
         public TelegramNotifier(Settings settings)
         {
@@ -37,11 +38,11 @@ namespace MempoolBot.Notifications
             );
         }
 
-		public async Task SendAsync(RecommendedFees currentFees, RecommendedFees previousFees)
+		public async Task SendFeesAsync(RecommendedFees currentFees)
 		{
             try
             {
-                _PreviousFees = previousFees;
+                if (currentFees == null) return;
 
                 if (_ChatId <= 0)
                 {
@@ -49,10 +50,8 @@ namespace MempoolBot.Notifications
                     return;
                 }
 
-                if (currentFees == null) return;
-
                 var feesMsg = $"*Current \"economy\" fee*: {currentFees.EconomyFee} sats/vbyte (below {_Settings.EconomyRateThreshold} sats/vbyte)\n";
-                if (_PreviousFees != null) feesMsg += $"*Previous \"economy fee\":* {_PreviousFees?.EconomyFee} sats/vbyte";
+                if (LatestFees != null) feesMsg += $"*Previous \"economy\" fee*: {LatestFees?.EconomyFee} sats/vbyte";
 
                 Console.WriteLine($"Sending message to ChatId {_ChatId} (from InstanceId {_InstanceId} running on {Environment.MachineName} using {_Settings.MempoolApiUrl})");
                 Console.WriteLine($"Message: {feesMsg}");
@@ -60,6 +59,27 @@ namespace MempoolBot.Notifications
                 await _BotClient.SendTextMessageAsync(
                     chatId: _ChatId,
                     text: Utils.EscapeMarkdownSpecialCharacters(feesMsg),
+                    parseMode: ParseMode.MarkdownV2,
+                    cancellationToken: _CancellationTokenSource.Token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending new fee notification to Telegram: {ex}");
+            }
+        }
+
+        private async Task SendWelcomeMessageAsync(Message message)
+        {
+            try
+            {
+                var welcomeMessage = $"Welcome {message.From.FirstName} to MempoolBot!\n" +
+                                    $"You will receive notifications when the \"economy\" fee goes below {_Settings.EconomyRateThreshold} sats/vbyte\n" +
+                                    $"Notifications will be repeated every {_Settings.NotifyRepeatFrequencyMinutes} minute{(_Settings.NotifyRepeatFrequencyMinutes > 1 ? "s" : "")}\n" +
+                                    $"I'm running on machine {Environment.MachineName} using Mempool API {_Settings.MempoolApiUrl}";
+
+                await _BotClient.SendTextMessageAsync(
+                    chatId: _ChatId,
+                    text: Utils.EscapeMarkdownSpecialCharacters(welcomeMessage),
                     parseMode: ParseMode.MarkdownV2,
                     cancellationToken: _CancellationTokenSource.Token);
             }
@@ -81,33 +101,19 @@ namespace MempoolBot.Notifications
                 if (message.Text is not { } messageText)
                     return;
 
-                // Only handle /start
-                if (message.Text != "/start")
-                    return;
-
                 // Only care if a new chat
-                if (_ChatId == message.Chat.Id)
-                    return;
+                //if (_ChatId == message.Chat.Id)
+                //    return;
 
                 _ChatId = message.Chat.Id;
 
                 Console.WriteLine($"Received a '{messageText}' message in chat {_ChatId}. TelegramUser is {message.From.FirstName} {message.From.LastName} ({message.From.Username})");
 
-                //if (_PreviousFees == null) return;
-
-                //var newMessage = $"*Last economy fee:* {_PreviousFees.EconomyFee}\r";
-                //var debugMessage = $"InstanceId {_InstanceId} running on {Environment.MachineName} received message on ChatId {_ChatId} ({_Settings.MempoolApiUrl})";
-
-                var welcomeMessage = $"Welcome {message.From.FirstName} to MempoolBot!\n" +
-                    $"You will receive notifications when the \"economy\" fee goes below {_Settings.EconomyRateThreshold} sats/vbyte\n" +
-                    $"Notifications will be repeated every {_Settings.NotifyRepeatFrequencyMinutes} minutes\n" +
-                    $"I'm running on machine {Environment.MachineName} using Mempool API {_Settings.MempoolApiUrl}";
-
-                await _BotClient.SendTextMessageAsync(
-                    chatId: _ChatId,
-                    text: Utils.EscapeMarkdownSpecialCharacters(welcomeMessage),
-                    parseMode: ParseMode.MarkdownV2,
-                    cancellationToken: _CancellationTokenSource.Token);
+                // Supported commands
+                if (message.Text == "/start")
+                    await SendWelcomeMessageAsync(message);
+                else if (message.Text == "/fees" && LatestFees != null)
+                    await SendFeesAsync(LatestFees);
             }
             catch (Exception ex)
             {

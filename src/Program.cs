@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 
 // Build a config object, using env vars and JSON providers.
 IConfigurationRoot config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
+    .AddJsonFile("src/appsettings.json")
     .AddEnvironmentVariables()
     .Build();
 

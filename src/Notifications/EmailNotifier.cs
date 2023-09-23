@@ -10,12 +10,14 @@ namespace MempoolBot.Notifications
         Settings _Settings;
         private bool disposedValue;
 
+        public RecommendedFees? LatestFees { get; set; }
+
         public EmailNotifier(Settings settings)
 		{
             _Settings = settings;
         }
 
-        public async Task SendAsync(RecommendedFees currentFees, RecommendedFees previousFees)
+        public async Task SendFeesAsync(RecommendedFees currentFees)
         {
             try
             {
@@ -39,7 +41,7 @@ namespace MempoolBot.Notifications
                 myMail.SubjectEncoding = System.Text.Encoding.UTF8;
 
                 // set body-message and encoding
-                var body = MakeEmailBody(currentFees, previousFees);
+                var body = MakeEmailBody(currentFees);
                 myMail.Body = body;
                 myMail.BodyEncoding = System.Text.Encoding.UTF8;
 
@@ -59,10 +61,10 @@ namespace MempoolBot.Notifications
 
         }
 
-        private string MakeEmailBody(RecommendedFees currentFees, RecommendedFees previousFees)
+        private string MakeEmailBody(RecommendedFees currentFees)
         {
             var body = $"<b>Current \"economy\" fee:</b> {currentFees.EconomyFee} sats/vbyte<br>";
-            if (previousFees != null) body += $"<b>Previous \"economy\" fee:</b> {previousFees?.EconomyFee} sats/vbyte<br>";
+            if (LatestFees != null) body += $"<b>Previous \"economy\" fee:</b> {LatestFees?.EconomyFee} sats/vbyte<br>";
             body += $"<b>Notification Threshold:</b> {_Settings.EconomyRateThreshold} sats/vbyte";
 
             return body;

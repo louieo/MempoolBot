@@ -4,8 +4,9 @@ namespace MempoolBot.Notifications
 {
 	public interface INotifier: IDisposable
     {
+        public RecommendedFees? LatestFees { get; set; }
         public void INotifier(Settings settings) { }
-        public async Task SendAsync(RecommendedFees currentFees, RecommendedFees previousFees) { }
+        public async Task SendFeesAsync(RecommendedFees currentFees) { }
     }
 }
 

@@ -1,5 +1,4 @@
-﻿using MempoolBot.Models;
-using MempoolBot.Notifications;
+﻿using MempoolBot.Notifications;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -14,7 +13,6 @@ namespace MempoolBot
         MempoolAPI _MempoolAPI;
 
         Timer _Timer = new Timer();
-        RecommendedFees? _PreviousFees;
         DateTime _LastNotificationTime = DateTime.MinValue;
 
         public APIPoller(Settings settings, INotifier notifier)
@@ -26,7 +24,7 @@ namespace MempoolBot
 
         ~APIPoller()
         {
-            Console.WriteLine("ApiPoller shutting down...");
+            Console.WriteLine("APIPoller shutting down...");
         }
 
         public void Start()
@@ -41,6 +39,7 @@ namespace MempoolBot
             _Timer.Stop();
             try
             {
+                Console.WriteLine($"Getting fees from {_Settings.MempoolApiUrl}...");
                 var currentFees = await _MempoolAPI.GetRecommendedFees();
 
                 if (currentFees != null)
@@ -49,18 +48,18 @@ namespace MempoolBot
 
                     if (currentFees.EconomyFee <= _Settings.EconomyRateThreshold)
                     {
-                        if (_PreviousFees == null ||
-                            _PreviousFees.EconomyFee > _Settings.EconomyRateThreshold ||
+                        if (_Notifier.LatestFees == null ||
+                            _Notifier.LatestFees.EconomyFee > _Settings.EconomyRateThreshold ||
                             (DateTime.Now - _LastNotificationTime).Minutes >= _Settings.NotifyRepeatFrequencyMinutes)
                         {
                             Console.WriteLine($"Sending notification! EconomyFee = {currentFees.EconomyFee}, EconomyRateThreshold = {_Settings.EconomyRateThreshold}");
                             _LastNotificationTime = DateTime.Now;
 
-                            await _Notifier.SendAsync(currentFees, _PreviousFees);
+                            await _Notifier.SendFeesAsync(currentFees);
                         }
                     }
 
-                    _PreviousFees = currentFees;
+                    _Notifier.LatestFees = currentFees;
                 }
             }
             finally
