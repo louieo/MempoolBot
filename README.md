@@ -2,8 +2,7 @@
 
 Simple push notifier of transaction fee rates in a Bitcoin mempool.
 
-Helps inform you when shitcoiners have run out of money and it may be a good time to make on-chain transactions that you have been waiting to do.  
-Alternatively, just keep a track of fee rates periodically via a push notification.
+Helps inform you when shitcoiners have run out of money and it may be a good time to make on-chain transactions that you have been waiting to do, or alternatively just keep track of fee rates periodically via a push notification.
 
 .NET Core application written in C# and configured for deployment via Docker.
 
