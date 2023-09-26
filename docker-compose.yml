@@ -1,11 +1,11 @@
 version: '3.4'
-name: mempoolbot
+
 services:
-  mempoolbot:
-    image: louieo/mempoolbot
+  mempoolbot.web:
+    image: ${DOCKER_REGISTRY-}mempoolbot
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: MempoolBot.Web/Dockerfile
     environment:
       - Settings__NotifyMethod=Telegram
       - Settings__MempoolApiUrl=http://mempool.space/api/v1
