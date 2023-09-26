@@ -49,14 +49,16 @@ namespace MempoolBot.Lib
 
                     if (currentFees.EconomyFee <= _Settings.EconomyRateThreshold)
                     {
-                        if (_Notifier.LatestFees == null ||
-                            _Notifier.LatestFees.EconomyFee > _Settings.EconomyRateThreshold ||
-                            (DateTime.Now - _LastNotificationTime).Minutes >= _Settings.NotifyRepeatFrequencyMinutes)
+                        bool isRepeatNotification = (DateTime.Now - _LastNotificationTime).Minutes >= _Settings.NotifyRepeatFrequencyMinutes;
+
+                        if (_Notifier.LatestFees == null || // have no previous fees recorded
+                            _Notifier.LatestFees.EconomyFee > _Settings.EconomyRateThreshold || // has dropped since last recorded fees
+                            isRepeatNotification)
                         {
                             Console.WriteLine($"Sending notification! EconomyFee = {currentFees.EconomyFee}, EconomyRateThreshold = {_Settings.EconomyRateThreshold}");
                             _LastNotificationTime = DateTime.Now;
 
-                            await _Notifier.SendFeesAsync(currentFees);
+                            await _Notifier.SendFeesAsync(currentFees, isRepeatNotification);
                         }
                     }
 

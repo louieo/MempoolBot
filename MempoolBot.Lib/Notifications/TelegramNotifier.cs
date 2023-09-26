@@ -38,7 +38,7 @@ namespace MempoolBot.Lib.Notifications
             );
         }
 
-		public async Task SendFeesAsync(RecommendedFees currentFees)
+		public async Task SendFeesAsync(RecommendedFees currentFees, bool isRepeatNotification)
 		{
             try
             {
@@ -50,7 +50,7 @@ namespace MempoolBot.Lib.Notifications
                     return;
                 }
 
-                var feesMsg = $"*Current \"economy\" fee*: {currentFees.EconomyFee} sats/vbyte (configured threshold is {_Settings.EconomyRateThreshold} sats/vbyte)\n";
+                var feesMsg = $"{(isRepeatNotification ? "_Repeat Notification_: " : "")}*Current \"economy\" fee*: {currentFees.EconomyFee} sats/vbyte (configured threshold is {_Settings.EconomyRateThreshold} sats/vbyte)\n";
                 if (LatestFees != null) feesMsg += $"*Previous \"economy\" fee*: {LatestFees?.EconomyFee} sats/vbyte";
 
                 Console.WriteLine($"Sending message to ChatId {_ChatId} (from InstanceId {_InstanceId} running on {Environment.MachineName} using {_Settings.MempoolApiUrl})");
@@ -107,13 +107,13 @@ namespace MempoolBot.Lib.Notifications
 
                 _ChatId = message.Chat.Id;
 
-                Console.WriteLine($"Received a '{messageText}' message in chat {_ChatId}. TelegramUser is {message?.From?.FirstName} {message?.From?.LastName} ({message.From.Username})");
+                Console.WriteLine($"Received a '{messageText}' message in chat {_ChatId}. TelegramUser is {message?.From?.FirstName} {message?.From?.LastName} ({message?.From?.Username})");
 
                 // Supported commands
-                if (message.Text == "/start")
+                if (message?.Text == "/start")
                     await SendWelcomeMessageAsync(message);
-                else if (message.Text == "/fees" && LatestFees != null)
-                    await SendFeesAsync(LatestFees);
+                else if (message?.Text == "/fees" && LatestFees != null)
+                    await SendFeesAsync(LatestFees, false);
             }
             catch (Exception ex)
             {

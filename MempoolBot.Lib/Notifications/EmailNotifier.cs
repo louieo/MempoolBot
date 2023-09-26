@@ -16,7 +16,7 @@ namespace MempoolBot.Lib.Notifications
             _Settings = settings;
         }
 
-        public async Task SendFeesAsync(RecommendedFees currentFees)
+        public async Task SendFeesAsync(RecommendedFees currentFees, bool isRepeatNotification)
         {
             try
             {
@@ -51,13 +51,12 @@ namespace MempoolBot.Lib.Notifications
             }
             catch (SmtpException ex)
             {
-                throw new ApplicationException("SmtpException has occured: " + ex.Message);
+                Console.WriteLine($"SmtpException has occured: {ex}");
             }
             catch (Exception ex)
             {
-                throw ex;
+                Console.WriteLine($"Exception has occured sending email: {ex}");
             }
-
         }
 
         private string MakeEmailBody(RecommendedFees currentFees)
