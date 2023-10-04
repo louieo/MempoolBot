@@ -18,6 +18,13 @@ FROM build AS publish
 RUN dotnet publish "MempoolBot.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+
+######################
+# Installing ping
+RUN apt-get update
+RUN apt-get install -y iputils-ping
+######################
+
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "MempoolBot.Web.dll"]
