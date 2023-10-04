@@ -20,7 +20,7 @@ Settings? settings = builder.Configuration.GetRequiredSection("Settings").Get<Se
 if (settings == null) throw new Exception("Unable to get config from settings file");
 
 Console.WriteLine("---------------------------------------------");
-Console.WriteLine($"NotifyMethod = {settings.NotifyMethod}");
+Console.WriteLine($"NotifierType = {settings.NotifierType}");
 Console.WriteLine($"MempoolApiUrl = {settings.MempoolApiUrl}");
 Console.WriteLine($"EconomyRateThreshold = {settings.EconomyRateThreshold}");
 Console.WriteLine($"NotifyRepeatFrequencyMinutes = {settings.NotifyRepeatFrequencyMinutes}");
@@ -32,7 +32,7 @@ Console.WriteLine($"NotifyRepeatFrequencyMinutes = {settings.NotifyRepeatFrequen
 //Console.WriteLine($"ToEmail = {settings.ToEmail}");
 Console.WriteLine("---------------------------------------------");
 
-Type? notifierType = Type.GetType($"MempoolBot.Lib.Notifications.{settings.NotifyMethod}, MempoolBot.Lib");
+Type? notifierType = Type.GetType($"MempoolBot.Lib.Notifications.{settings.NotifierType}, MempoolBot.Lib");
 
 // Add services to the container.
 builder.Services.AddRazorPages();
