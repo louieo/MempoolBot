@@ -1,74 +1,74 @@
-﻿using MempoolBot.Lib.MempoolSpace;
+﻿using MempoolBot.Lib.Common;
+using MempoolBot.Lib.MempoolSpace;
 using MempoolBot.Lib.Notifications;
+using Microsoft.Extensions.Options;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
-namespace MempoolBot.Lib
+namespace MempoolBot.Lib;
+
+public class FeeChecker
 {
-    public class FeeChecker
+    const int POLLING_INTERVAL_SECONDS = 5;
+
+    IOptions<Settings> _Settings;
+    MempoolSpaceAPI _MempoolSpaceAPI;
+    Timer _Timer = new Timer();
+
+    public INotifier Notifier { get; internal set; }
+
+    public FeeChecker(IOptions<Settings> settings, INotifier notifier)
     {
-        const int POLLING_INTERVAL_SECONDS = 5;
+        _Settings = settings;
+        _MempoolSpaceAPI = new MempoolSpaceAPI(_Settings.Value.MempoolApiUrl);
 
-        Settings _Settings;
-        INotifier _Notifier;
-        MempoolSpaceAPI _MempoolSpaceAPI;
+        Notifier = notifier;
+    }
 
-        Timer _Timer = new Timer();
-        DateTime _LastNotificationTime = DateTime.MinValue;
+    ~FeeChecker()
+    {
+        Console.WriteLine("FeeChecker shutting down...");
+    }
 
-        public FeeChecker(Settings settings, INotifier notifier)
+    public void Start()
+    {
+        _Timer.Interval = TimeSpan.FromSeconds(POLLING_INTERVAL_SECONDS).TotalMilliseconds;
+        _Timer.Elapsed += Timer_Elapsed;
+        _Timer.Start();
+    }
+
+    private async void Timer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+        _Timer.Stop();
+        try
         {
-            _Settings = settings;
-            _Notifier = notifier;
-            _MempoolSpaceAPI = new MempoolSpaceAPI(_Settings.MempoolApiUrl);
-        }
+            //Console.WriteLine($"Getting fees from {_Settings.MempoolApiUrl}...");
+            var currentFees = await _MempoolSpaceAPI.GetRecommendedFees();
 
-        ~FeeChecker()
-        {
-            Console.WriteLine("FeeChecker shutting down...");
-        }
-
-        public void Start()
-        {
-            _Timer.Interval = TimeSpan.FromSeconds(POLLING_INTERVAL_SECONDS).TotalMilliseconds;
-            _Timer.Elapsed += Timer_Elapsed;
-            _Timer.Start();
-        }
-
-        private async void Timer_Elapsed(object? sender, ElapsedEventArgs e)
-        {
-            _Timer.Stop();
-            try
+            if (currentFees != null)
             {
-                //Console.WriteLine($"Getting fees from {_Settings.MempoolApiUrl}...");
-                var currentFees = await _MempoolSpaceAPI.GetRecommendedFees();
+                //Console.WriteLine(JsonConvert.SerializeObject(fees));
 
-                if (currentFees != null)
+                if (currentFees.EconomyFee <= _Settings.Value.EconomyRateThreshold)
                 {
-                    //Console.WriteLine(JsonConvert.SerializeObject(fees));
+                    bool isRepeatNotification = (DateTime.Now - Notifier.LastNotificationTime).Minutes >= _Settings.Value.NotifyRepeatFrequencyMinutes;
 
-                    if (currentFees.EconomyFee <= _Settings.EconomyRateThreshold)
+                    if (Notifier.LatestFees == null || // have no previous fees recorded
+                        Notifier.LatestFees.EconomyFee > _Settings.Value.EconomyRateThreshold || // has dropped since last recorded fees
+                        isRepeatNotification)
                     {
-                        bool isRepeatNotification = (DateTime.Now - _LastNotificationTime).Minutes >= _Settings.NotifyRepeatFrequencyMinutes;
+                        Console.WriteLine($"Sending notification! EconomyFee = {currentFees.EconomyFee}, EconomyRateThreshold = {_Settings.Value.EconomyRateThreshold}");
 
-                        if (_Notifier.LatestFees == null || // have no previous fees recorded
-                            _Notifier.LatestFees.EconomyFee > _Settings.EconomyRateThreshold || // has dropped since last recorded fees
-                            isRepeatNotification)
-                        {
-                            Console.WriteLine($"Sending notification! EconomyFee = {currentFees.EconomyFee}, EconomyRateThreshold = {_Settings.EconomyRateThreshold}");
-                            _LastNotificationTime = DateTime.Now;
-
-                            await _Notifier.SendFeesAsync(currentFees, isRepeatNotification);
-                        }
+                        await Notifier.SendFeesAsync(currentFees, isRepeatNotification);
                     }
-
-                    _Notifier.LatestFees = currentFees;
                 }
+
+                Notifier.LatestFees = currentFees;
             }
-            finally
-            {
-                _Timer.Start();
-            }
+        }
+        finally
+        {
+            _Timer.Start();
         }
     }
 }

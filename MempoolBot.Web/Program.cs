@@ -1,12 +1,43 @@
-﻿using MempoolBot;
-using MempoolBot.Lib;
+﻿using MempoolBot.Lib;
 using MempoolBot.Lib.Common;
 using MempoolBot.Lib.Notifications;
+using MempoolBot.Web.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddOptions();
+builder.Services.Configure<Settings>(builder.Configuration.GetSection("Settings"));
+builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("Settings").GetSection("Telegram"));
+
+builder.Services.AddDbContext<MempoolBotContext>(options =>
+ {
+     options.UseNpgsql(builder.Configuration.GetSection("DatabaseConfig")["PostgresSQL"]);
+ });
+
+// Get values from the config given their key and their target type.
+Settings? settings = builder.Configuration.GetRequiredSection("Settings").Get<Settings>();
+if (settings == null) throw new Exception("Unable to get config from settings file");
+
+Console.WriteLine("---------------------------------------------");
+Console.WriteLine($"NotifyMethod = {settings.NotifyMethod}");
+Console.WriteLine($"MempoolApiUrl = {settings.MempoolApiUrl}");
+Console.WriteLine($"EconomyRateThreshold = {settings.EconomyRateThreshold}");
+Console.WriteLine($"NotifyRepeatFrequencyMinutes = {settings.NotifyRepeatFrequencyMinutes}");
+//Console.WriteLine($"TelegramBotToken = {settings.TelegramBotToken}");
+//Console.WriteLine($"SmtpServer = {settings.SmtpServer}");
+//Console.WriteLine($"SmtpUser = {settings.SmtpUser}");
+//Console.WriteLine($"SmtpPass = {settings.SmtpPass}");
+//Console.WriteLine($"FromEmail = {settings.FromEmail}");
+//Console.WriteLine($"ToEmail = {settings.ToEmail}");
+Console.WriteLine("---------------------------------------------");
+
+Type? notifierType = Type.GetType($"MempoolBot.Lib.Notifications.{settings.NotifyMethod}, MempoolBot.Lib");
+
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<FeeChecker>();
+builder.Services.AddSingleton(typeof(INotifier), notifierType);
 
 var app = builder.Build();
 
@@ -27,55 +58,12 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
+Console.WriteLine("Creating Fee Checker...");
 
-// Build a config object, using env vars and JSON providers.
-IConfigurationRoot config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .AddEnvironmentVariables()
-    .Build();
+var feeChecker = app.Services.GetRequiredService<FeeChecker>();
 
-// Get values from the config given their key and their target type.
-Settings? settings = config.GetRequiredSection("Settings").Get<Settings>();
-
-if (settings == null) throw new Exception("Unable to get config from settings file");
-
-Console.WriteLine("---------------------------------------------");
-Console.WriteLine($"NotifyMethod = {settings.NotifyMethod}");
-Console.WriteLine($"MempoolApiUrl = {settings.MempoolApiUrl}");
-Console.WriteLine($"EconomyRateThreshold = {settings.EconomyRateThreshold}");
-Console.WriteLine($"NotifyRepeatFrequencyMinutes = {settings.NotifyRepeatFrequencyMinutes}");
-Console.WriteLine($"TelegramBotToken = {settings.TelegramBotToken}");
-Console.WriteLine($"SmtpServer = {settings.SmtpServer}");
-Console.WriteLine($"SmtpUser = {settings.SmtpUser}");
-Console.WriteLine($"SmtpPass = {settings.SmtpPass}");
-Console.WriteLine($"FromEmail = {settings.FromEmail}");
-Console.WriteLine($"ToEmail = {settings.ToEmail}");
-Console.WriteLine("---------------------------------------------");
-
-INotifier notifier;
-
-switch (settings.NotifyMethod)
-{
-    case NotifyMethod.Email:
-        notifier = new EmailNotifier(settings);
-        break;
-    case NotifyMethod.Telegram:
-        notifier = new TelegramNotifier(settings);
-        break;
-    default:
-        throw new Exception($"Unsupported Notification method {settings.NotifyMethod}");
-}
-
-using (notifier)
-{
-    Console.WriteLine("Creating Fee Checker...");
-    var feeChecker = new FeeChecker(settings, notifier);
-
-    Console.WriteLine("Starting Fee Checker...");
-    feeChecker.Start();
-
-    //Thread.Sleep(Timeout.Infinite);
-}
+Console.WriteLine("Starting Fee Checker...");
+feeChecker.Start();
 
 app.Run();
 

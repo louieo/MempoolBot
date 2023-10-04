@@ -1,9 +1,8 @@
-﻿namespace MempoolBot.Lib.Common
+﻿namespace MempoolBot.Lib.Common;
+
+public enum NotifyMethod
 {
-	public enum NotifyMethod
-	{
-		Telegram,
-		Email
-	}
+	Telegram,
+	Email
 }
 

@@ -1,4 +1,4 @@
-﻿namespace MempoolBot.Lib.Common;
+﻿namespace MempoolBot.Web.Data.Models;
 
 public class Settings
 {

@@ -1,11 +1,28 @@
 ﻿@page
+@using Microsoft.Extensions.Options;
+@using MempoolBot.Lib;
+@using MempoolBot.Lib.Common;
+@using MempoolBot.Lib.Notifications;
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
 }
+@inject FeeChecker feeChecker;
+@inject IOptions<Settings> settings;
+@inject IOptions<TelegramSettings> telegramSettings;
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">MempoolBot</h1>
+
+    <img src="img/PartyFauna512.png" />
+    <p>Notifier is @feeChecker.Notifier</p>
+    <p>Last notified at @feeChecker.Notifier.LastNotificationTime.ToLocalTime()</p>
+
+    <form method="post" name="SaveSettingsForm">
+        <label for="EconomyRateThreshold">Notify when "economy" fee rate drops below </label><input name="EconomyRateThreshold" value="@settings.Value.EconomyRateThreshold" /> sats/vByte</p>
+        <label for="NotifyRepeatFrequencyMinutes">Repeat Notifications Every</label> <input name="NotifyRepeatFrequencyMinutes" value="@settings.Value.NotifyRepeatFrequencyMinutes" /> Minutes</br>
+        <label for="TelegramBotToken">Telegram Bot Token</label><input name="TelegramBotToken" value="@telegramSettings.Value.TelegramBotToken" /></br>
+        <button type="submit">Save</button>
+    </form>
 </div>
 
