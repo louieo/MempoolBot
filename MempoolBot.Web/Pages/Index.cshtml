@@ -11,18 +11,36 @@
 @inject IOptions<Settings> settings;
 @inject IOptions<TelegramSettings> telegramSettings;
 
-<div class="text-center">
+<div class="container text-center settings">
     <h1 class="display-4">MempoolBot</h1>
 
     <img src="img/PartyFauna512.png" />
-    <p>Notifier is @feeChecker.Notifier</p>
-    <p>Last notified at @feeChecker.Notifier.LastNotificationTime.ToLocalTime()</p>
+
+    <div class="list-group">
+        <p>Notifier is @settings.Value.NotifierType</p>
+        <p>Last notified at @feeChecker.Notifier.LastNotificationTime.ToLocalTime()</p>
+    </div>
 
     <form method="post" name="SaveSettingsForm">
-        <label for="EconomyRateThreshold">Notify when "economy" fee rate drops below </label><input name="EconomyRateThreshold" value="@settings.Value.EconomyRateThreshold" /> sats/vByte</p>
-        <label for="NotifyRepeatFrequencyMinutes">Repeat Notifications Every</label> <input name="NotifyRepeatFrequencyMinutes" value="@settings.Value.NotifyRepeatFrequencyMinutes" /> Minutes</br>
-        <label for="TelegramBotToken">Telegram Bot Token</label><input name="TelegramBotToken" value="@telegramSettings.Value.TelegramBotToken" /></br>
-        <button type="submit">Save</button>
+        <div class="list-group">
+            <div class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                <label for="MempoolApiUrl" class="form-label">Mempool API</label>
+                <input type="text" class="form-control" name="MempoolApiUrl" width="100" value="@settings.Value.MempoolApiUrl" />
+            </div>
+            <div class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                <label for="EconomyRateThreshold" class="form-label">Notify when "economy" fee rate drops below</label>
+                <input type="number" class="form-control" name="EconomyRateThreshold" value="@settings.Value.EconomyRateThreshold" /> sats/vByte
+            </div>
+            <div class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                <label for="NotifyRepeatFrequencyMinutes" class="form-label">Repeat Notifications Every</label>
+                <input type="number" class="form-control" name="NotifyRepeatFrequencyMinutes" value="@settings.Value.NotifyRepeatFrequencyMinutes" /> Minutes
+            </div>
+            <div class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                <label for="TelegramBotToken" class="form-label">Telegram Bot Token</label>
+                <input type="text" class="form-control" name="TelegramBotToken" value="@telegramSettings.Value.TelegramBotToken" />
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
     </form>
 </div>
 

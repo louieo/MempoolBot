@@ -33,6 +33,7 @@ Console.WriteLine($"NotifyRepeatFrequencyMinutes = {settings.NotifyRepeatFrequen
 Console.WriteLine("---------------------------------------------");
 
 Type? notifierType = Type.GetType($"MempoolBot.Lib.Notifications.{settings.NotifierType}, MempoolBot.Lib");
+if (notifierType == null) throw new Exception("Unknown NotifierType");
 
 // Add services to the container.
 builder.Services.AddRazorPages();

@@ -28,10 +28,14 @@ public class IndexModel : PageModel
     {
     }
 
-    public void OnPost(int economyRateThreshold, int notifyRepeatFrequencyMinutes, string telegramBotToken)
+    public void OnPost(string mempoolApiUrl,
+        int economyRateThreshold,
+        int notifyRepeatFrequencyMinutes,
+        string telegramBotToken)
     {
         _Logger.LogInformation("Saving settings...");
 
+        _Settings.Value.MempoolApiUrl = mempoolApiUrl;
         _Settings.Value.EconomyRateThreshold = economyRateThreshold;
         _Settings.Value.NotifyRepeatFrequencyMinutes = notifyRepeatFrequencyMinutes;
         _TelegramSettings.Value.TelegramBotToken = telegramBotToken;
